@@ -10,9 +10,7 @@ const paths = {
     },
     showPost(topicSlug: string, postId: string){
         return `/topic/${topicSlug}/posts/${postId}`
-
     }
-
 }
 
 export default paths
