@@ -1,13 +1,17 @@
 "use server"
-import * as auth from "@/auth"
 import { db } from "@/db"
 import { Post, Topic } from "@prisma/client"
-interface TOPIC {
-    slug: string,
-    description: string,
-    posts: Post[],
-    createdAt: string,
-    updatedAt: string
+import { createTopicSchema } from "@/lib/validation";
+import * as auth from "@/auth";
+import paths from "@/path";
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+interface FORMSATE {
+    errors: {
+        name?: string[],
+        description?: string[],
+        _form?: string[]
+    }
 }
 
 export async function signIn(){
@@ -16,19 +20,53 @@ export async function signIn(){
 export async function SignOut(){
     return auth.signOut()
 }
-export async function createTopic(formStatw: {message: string}, topic: Topic) {
-    try{
-    const newTopic = await db.topic.create({
-        data: topic
+export async function createTopic(formState: FORMSATE, formData: FormData): Promise<FORMSATE>{
+    const results = createTopicSchema.safeParse({
+        name: formData.get("name"),
+        description: formData.get("description")
     })
-    if(!newTopic){
-        throw new Error("creating a new topic failes please try again")
+    if(!results.success){
+        return {
+            errors:  results.error.flatten().fieldErrors
+        }
     }
-    //TODO: revalidate the home page
+    // check if the user has signed in 
+    const session = await auth.auth()
+    if(!session || !session.user){
+        return {
+            errors: {
+                _form: ["You must sign in in order to create a topic"]
+            }
+        }
     }
-    catch(error: any){
-
+    
+    let topic: Topic
+    try{
+        topic = await db.topic.create({
+            data: {
+                slug: results.data.name,
+                description: results.data.description
+            }
+        })
     }
+    catch(error: unknown){
+        if(error instanceof Error){
+            return {
+                errors: {
+                    _form: [error.message]
+                }
+            }
+        }
+        else{
+            return {
+                errors: {
+                    _form: ["something went wrong. please try again"]
+                }
+            }
+        }
+    }
+    revalidatePath(paths.homePage())
+    redirect(paths.topicShow(topic.slug))
 }
 
 export async function createPost() {
