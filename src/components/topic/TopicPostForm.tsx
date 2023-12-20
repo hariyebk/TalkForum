@@ -2,10 +2,12 @@
 import { Button, Popover, PopoverContent, PopoverTrigger, Textarea, Input } from "@nextui-org/react";
 import * as actions from "@/actions"
 import { useFormState } from "react-dom";
+import FormButton from "../common/FormButton";
 
 export default function TopicPostForm() {
     // formState to communicate server action with the form 
     const [formState, action] = useFormState(actions.createTopic, {errors: {}})
+    // from general form errors like netowrk failure ...etc
     let formError: React.ReactNode
     if(formState.errors?._form && formState.errors._form.length > 0){
         formError = <p className="text-base text-red-500"> {formState.errors._form.join(",")} </p>
@@ -22,7 +24,7 @@ export default function TopicPostForm() {
                         <Input name="name" label = "Name" labelPlacement="outside" placeholder="Name" isInvalid = {!!formState.errors.name} errorMessage = {formState.errors.name?.join(",")} />
                         <Textarea name="description" label = "Description" labelPlacement="outside" placeholder="say something" isInvalid = {!!formState.errors.description} errorMessage = {formState.errors.description?.join(",")} />
                         {formError}
-                        <Button type="submit" className="w-full"> Submit </Button>
+                        <FormButton> Save </FormButton>
                     </div>
                 </form>
             </PopoverContent>
