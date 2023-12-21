@@ -39,3 +39,7 @@ export async function fetchPostsBySlug(slug: string): Promise<postWithData[]> {
         }
     }
 }
+// export async function fecthTopPosts(): Promise<postWithData[]> {
+//     return db.post.
+    
+// }

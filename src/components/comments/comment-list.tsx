@@ -1,9 +1,12 @@
 import CommentShow from "@/components/comments/comment-show";
+import { commentWithData } from "@/db/queries/comment";
 
-interface CommentListProps {}
+interface CommentListProps {
+  fecthData: () => Promise<commentWithData[]>
+}
 
-// TODO: Get a list of comments from somewhere
-export default function CommentList({}: CommentListProps) {
+export default async function CommentList({fecthData}: CommentListProps) {
+  const comments = await fecthData()
   const topLevelComments = comments.filter(
     (comment) => comment.parentId === null
   );
@@ -18,7 +21,7 @@ export default function CommentList({}: CommentListProps) {
   });
 
   return (
-    <div className="space-y-3">
+    <div className="my-10 ml-2">
       <h1 className="text-lg font-bold">All {comments.length} comments</h1>
       {renderedComments}
     </div>

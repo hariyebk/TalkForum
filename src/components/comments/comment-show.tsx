@@ -1,19 +1,18 @@
 import Image from "next/image";
 import { Button } from "@nextui-org/react";
 import CommentCreateForm from "@/components/comments/comment-create-form";
+import { commentWithData } from "@/db/queries/comment";
 
 interface CommentShowProps {
-  commentId: string;
+  commentId: string,
+  comments: commentWithData[]
 }
 
-// TODO: Get a list of comments
-export default function CommentShow({ commentId }: CommentShowProps) {
-  const comment = comments.find((c) => c.id === commentId);
-
-  if (!comment) {
+export default function CommentShow({ commentId, comments }: CommentShowProps) {
+  const mainComment = comments.find((c) => c.id === commentId);
+  if (!mainComment) {
     return null;
   }
-
   const children = comments.filter((c) => c.parentId === commentId);
   const renderedChildren = children.map((child) => {
     return (
@@ -25,7 +24,7 @@ export default function CommentShow({ commentId }: CommentShowProps) {
     <div className="p-4 border mt-2 mb-1">
       <div className="flex gap-3">
         <Image
-          src={comment.user.image || ""}
+          src={mainComment.user.image || ""}
           alt="user image"
           width={40}
           height={40}
@@ -33,11 +32,11 @@ export default function CommentShow({ commentId }: CommentShowProps) {
         />
         <div className="flex-1 space-y-3">
           <p className="text-sm font-medium text-gray-500">
-            {comment.user.name}
+            {mainComment.user.name}
           </p>
-          <p className="text-gray-900">{comment.content}</p>
+          <p className="text-gray-900">{mainComment.content}</p>
 
-          <CommentCreateForm postId={comment.postId} parentId={comment.id} />
+          <CommentCreateForm postId={mainComment.postId} parentId={mainComment.id} />
         </div>
       </div>
       <div className="pl-4">{renderedChildren}</div>

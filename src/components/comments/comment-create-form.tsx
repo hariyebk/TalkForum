@@ -3,7 +3,7 @@
 import { useFormState } from "react-dom";
 import { useEffect, useRef, useState } from "react";
 import { Textarea, Button } from "@nextui-org/react";
-import FormButton from "@/components/common/form-button";
+import FormButton from "../common/FormButton";
 import * as actions from "@/actions";
 
 interface CommentCreateFormProps {
@@ -36,7 +36,7 @@ export default function CommentCreateForm({
 
   const form = (
     <form action={action} ref={ref}>
-      <div className="space-y-2 px-1">
+      <div className="space-y-5 px-1">
         <Textarea
           name="content"
           label="Reply"
@@ -50,14 +50,15 @@ export default function CommentCreateForm({
             {formState.errors._form?.join(", ")}
           </div>
         ) : null}
-
-        <FormButton>Create Comment</FormButton>
+        <div className="max-w-[150px]">
+            <FormButton>Create Comment</FormButton>
+        </div>
       </div>
     </form>
   );
 
   return (
-    <div>
+    <div  className="mt-5">
       <Button size="sm" variant="light" onClick={() => setOpen(!open)}>
         Reply
       </Button>
